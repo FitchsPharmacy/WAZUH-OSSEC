@@ -20,7 +20,11 @@ ELKVER="7.9.1"
 KAPPVER="3.13.2"
 ELKREPO="7.x"
 
+# Nginx extra configuration
 NGINX_VERSION=$(curl -s http://nginx.org/en/download.html | grep -oP '(?<=gz">nginx-).*?(?=</a>)' | head -1)
+NGINX_BASE="https://raw.githubusercontent.com/magenx/Magento-nginx-config/master/"	
+
+EXTRA_PACKAGES="autoconf automake dejavu-fonts-common dejavu-sans-fonts libtidy libpcap pygpgme gettext-devel cppunit recode boost boost-build boost-jam double-conversion fastlz fribidi gflags glog oniguruma tbb ed lz4 libyaml libdwarf bind-utils e2fsprogs svn screen gcc iptraf inotify-tools smartmontools net-tools mcrypt mlocate unzip vim wget curl sudo bc mailx clamav-filesystem clamav-server clamav-update clamav-milter-systemd clamav-data clamav-server-systemd clamav-scanner-systemd clamav clamav-milter clamav-lib clamav-scanner proftpd logrotate git patch ipset strace rsyslog gifsicle ncurses-devel GeoIP GeoIP-devel GeoIP-update openssl-devel ImageMagick libjpeg-turbo-utils pngcrush jpegoptim moreutils lsof net-snmp net-snmp-utils xinetd python-pip python-devel ncftp postfix yum-cron yum-plugin-versionlock sysstat libuuid-devel uuid-devel attr iotop expect postgresql-libs unixODBC gcc-c++"
 
 ###################################################################################
 ###                                    COLORS                                   ###
@@ -70,10 +74,34 @@ function BLUEBG() {
 }
 
 ###################################################################################
+###                                  SYSTEM UPGRADE                             ###
+###################################################################################
+
+if ! grep -q "yes" ${MAGENX_CONFIG_PATH}/sysupdate >/dev/null 2>&1 ; then
+## install all extra packages
+echo
+BLUEBG "[~]    SYSTEM UPDATE AND PACKAGES INSTALLATION   [~]"
+WHITETXT "-------------------------------------------------------------------------------------"
+echo
+dnf install -y dnf-utils >/dev/null 2>&1
+dnf config-manager --set-enabled PowerTools >/dev/null 2>&1
+dnf -y install ${EXTRA_PACKAGES}
+## disable some module
+dnf -y module disable nginx php redis varnish >/dev/null 2>&1
+dnf -y upgrade --nobest
+echo
+echo "yes" > ${MAGENX_CONFIG_PATH}/sysupdate
+echo
+fi
+echo
+echo
+
+
+###################################################################################
 ###                         WAZUH + ELK STACK INSTALLATION                      ###
 ###################################################################################
 
-"wazuh")
+
 WHITETXT "============================================================================="
 echo
 GREENTXT "WAZUH 3 + ELK ${ELKVER} STACK INSTALLATION:"
