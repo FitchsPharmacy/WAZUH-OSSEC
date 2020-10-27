@@ -23,6 +23,7 @@ ELKREPO="7.x"
 # Nginx extra configuration
 NGINX_VERSION=$(curl -s http://nginx.org/en/download.html | grep -oP '(?<=gz">nginx-).*?(?=</a>)' | head -1)
 NGINX_BASE="https://raw.githubusercontent.com/magenx/Magento-nginx-config/master/"	
+GITHUB_REPO_API_URL="https://api.github.com/repos/magenx/Magento-nginx-config/contents/magento2"
 
 EXTRA_PACKAGES="net-tools unzip vim wget curl sudo GeoIP GeoIP-devel geoipupdate openssl-devel mod_ssl dnf-automatic"
 
