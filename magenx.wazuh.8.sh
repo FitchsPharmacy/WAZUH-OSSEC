@@ -25,7 +25,7 @@ NGINX_VERSION=$(curl -s http://nginx.org/en/download.html | grep -oP '(?<=gz">ng
 NGINX_BASE="https://raw.githubusercontent.com/magenx/Magento-nginx-config/master/"	
 GITHUB_REPO_API_URL="https://api.github.com/repos/magenx/Magento-nginx-config/contents/magento2"
 
-EXTRA_PACKAGES="net-tools unzip vim wget curl sudo GeoIP GeoIP-devel geoipupdate openssl-devel mod_ssl dnf-automatic httpd-tools"
+EXTRA_PACKAGES="unzip vim wget geoipupdate openssl-devel mod_ssl dnf-automatic httpd-tools"
 
 ###################################################################################
 ###                                    COLORS                                   ###
