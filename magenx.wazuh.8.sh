@@ -25,7 +25,7 @@ NGINX_VERSION=$(curl -s http://nginx.org/en/download.html | grep -oP '(?<=gz">ng
 NGINX_BASE="https://raw.githubusercontent.com/magenx/Magento-nginx-config/master/"	
 GITHUB_REPO_API_URL="https://api.github.com/repos/magenx/Magento-nginx-config/contents/magento2"
 
-EXTRA_PACKAGES="net-tools unzip vim wget curl sudo GeoIP GeoIP-devel geoipupdate openssl-devel mod_ssl dnf-automatic"
+EXTRA_PACKAGES="net-tools unzip vim wget curl sudo GeoIP GeoIP-devel geoipupdate openssl-devel mod_ssl dnf-automatic httpd-tools"
 
 ###################################################################################
 ###                                    COLORS                                   ###
@@ -242,8 +242,17 @@ read -e -p "---> Enter admin email: " -i "admin@domain.com" ADMIN_EMAIL
 wget -q https://dl.eff.org/certbot-auto -O /usr/local/bin/certbot-auto
 chmod +x /usr/local/bin/certbot-auto
 certbot-auto --install-only
-certbot-auto certonly --agree-tos --no-eff-email --email ${ADMIN_EMAIL} --webroot -w /tmp
-systemctl reload nginx.service
+systemctl stop nginx.service
+certbot-auto certonly --agree-tos --no-eff-email --email ${ADMIN_EMAIL} --standalone
+systemctl start nginx.service
+
+echo
+GREENTXT "NGINX SETTINGS"
+
+mkdir -p /etc/nginx/sites-enabled
+mkdir -p /etc/nginx/sites-available && cd $_
+curl -s ${GITHUB_REPO_API_URL}/sites-available 2>&1 | awk -F'"' '/download_url/ {print $4 ; system("curl -sO "$4)}' >/dev/null
+ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/default.conf
 echo
 cat > /etc/nginx/sites-available/kibana.conf <<END
   ## certbot-auto renew webroot
